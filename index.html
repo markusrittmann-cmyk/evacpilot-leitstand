@@ -33,15 +33,18 @@
         <div>
           <span class="eyebrow on-red">EvacPilot</span>
           <h1>Leitstand verbinden</h1>
-          <p>Der Web-Leitstand arbeitet mit denselben Unternehmens- und Alarmdaten wie die iPhone-App.</p>
+          <p>Mit Benutzername und Passwort auf jedem vorgesehenen Leitstand-PC anmelden. Die Live-Daten entsprechen der iPhone-App.</p>
         </div>
       </div>
       <div class="card join-card">
         <form id="joinForm" class="form">
-          <label>Einladungscode<input id="code" placeholder="XXXX-XXXX" required></label>
-          <label>Name<input id="name" placeholder="Leitstand" required></label>
-          <label>E-Mail<input id="email" type="email" placeholder="leitstand@firma.de"></label>
-          <button class="primary" type="submit">Mit EvacPilot verbinden</button>
+          <label>Benutzername
+            <input id="username" autocomplete="username" placeholder="Leitstand 1" required>
+          </label>
+          <label>Passwort
+            <input id="password" type="password" autocomplete="current-password" placeholder="Passwort" required>
+          </label>
+          <button class="primary" type="submit">Am Leitstand anmelden</button>
         </form>
         <div id="joinMsg" class="error"></div>
       </div>

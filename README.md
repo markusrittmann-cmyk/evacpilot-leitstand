@@ -3,7 +3,7 @@
 GitHub-Pages-Web-App für den bestehenden EvacPilot-Supabase-Backendbestand.
 
 ## Funktionen
-- Beitritt per EvacPilot-Einladungscode
+- fester Leitstand-Login mit Benutzername und Passwort
 - Organisationsauswahl
 - Live-Synchronisierung über Supabase Realtime
 - aktiver Alarm mit Hallen-/Bereichsstatus
@@ -37,9 +37,7 @@ Die App nutzt nur relative Pfade und funktioniert daher auch unter
 `https://BENUTZERNAME.github.io/evacpilot-leitstand/`.
 
 ## Erster Start
-Der Browser erzeugt eine eigene anonyme Supabase-Sitzung.
-Ohne bestehende Organisation erscheint die Eingabe für einen einmaligen Einladungscode.
-Für den dauerhaften Leitstand sollte ein eigener EvacPilot-Zugang verwendet werden.
+Der Browser erzeugt intern eine anonyme Supabase-Sitzung. Anschließend wird der feste Leitstand-Login verwendet. Der Login kann auf einen anderen PC übertragen werden; pro Leitstand bleibt genau ein aktiver Mitgliedsplatz zugeordnet.
 
 
 ## Design v2

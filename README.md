@@ -40,3 +40,10 @@ Die App nutzt nur relative Pfade und funktioniert daher auch unter
 Der Browser erzeugt eine eigene anonyme Supabase-Sitzung.
 Ohne bestehende Organisation erscheint die Eingabe für einen einmaligen Einladungscode.
 Für den dauerhaften Leitstand sollte ein eigener EvacPilot-Zugang verwendet werden.
+
+
+## Design v2
+- Originales EvacPilot-App-Icon übernommen
+- Rot-/Dunkelrot-Verlauf wie in der iOS-App
+- iOS-artige Systemkarten und gruppierter Hintergrund
+- automatischer Hell-/Dunkelmodus

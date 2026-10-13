@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0c1512">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="EvacPilot">
+  <title>EvacPilot Leitstand</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo">EP</div><div><b>EvacPilot</b><small>Leitstand</small></div></div>
+  <div class="top-actions"><span id="conn" class="pill">Verbinde…</span><button id="refresh">↻</button></div>
+</header>
+
+<main>
+  <section id="join" class="join hidden">
+    <div class="card join-card">
+      <span class="eyebrow">Webzugang</span>
+      <h1>Leitstand verbinden</h1>
+      <p>Dieser Browser erhält einen eigenen EvacPilot-Zugang und arbeitet mit denselben Daten wie die iPhone-App.</p>
+      <form id="joinForm" class="form">
+        <label>Einladungscode<input id="code" placeholder="XXXX-XXXX" required></label>
+        <label>Name<input id="name" placeholder="Leitstand" required></label>
+        <label>E-Mail<input id="email" type="email" placeholder="leitstand@firma.de"></label>
+        <button class="primary" type="submit">Verbinden</button>
+      </form>
+      <div id="joinMsg" class="error"></div>
+    </div>
+  </section>
+
+  <section id="dash" class="hidden">
+    <div class="head">
+      <div><span class="eyebrow">Live-Betrieb</span><h1 id="orgName">EvacPilot</h1><p id="orgMeta"></p></div>
+      <div class="actions">
+        <select id="orgSelect" class="hidden"></select>
+        <button id="alarmOpen" class="danger hidden">Alarm auslösen</button>
+        <button id="logout">Webzugang trennen</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><span>Aktive Alarme</span><b id="kpiAlarms">0</b></div>
+      <div class="kpi"><span>Bereiche geräumt</span><b id="kpiAreas">0 / 0</b></div>
+      <div class="kpi"><span>Rückmeldungen</span><b id="kpiResponses">0</b></div>
+      <div class="kpi"><span>Aktive Mitarbeiter</span><b id="kpiMembers">0</b></div>
+    </div>
+
+    <div id="empty" class="empty card"><div class="ok">✓</div><div><h2>Kein aktiver Alarm</h2><p>Der Leitstand ist verbunden. Neue Alarme erscheinen automatisch.</p></div></div>
+
+    <section id="incident" class="hidden">
+      <div class="incident-head">
+        <div><span class="eyebrow red">Aktiver Einsatz</span><h2 id="alarmTitle">Feueralarm</h2><p id="alarmMeta"></p></div>
+        <div class="actions"><button id="falseAlarm" class="hidden">Fehlalarm markieren</button><button id="allClear" class="hold hidden"><span class="fill"></span><span>3 Sek. halten: Entwarnung</span></button></div>
+      </div>
+
+      <div class="grid">
+        <div class="card wide"><div class="card-head"><h3>Bereiche / Hallen</h3><span id="areaCount"></span></div><div id="areas" class="areas"></div></div>
+        <div class="card"><h3>Schnellmeldungen</h3><div class="quick">
+          <button data-kind="fire_brigade_on_site" data-text="Feuerwehr vor Ort">🚒 Feuerwehr vor Ort</button>
+          <button data-kind="police_on_site" data-text="Polizei vor Ort">🚓 Polizei vor Ort</button>
+          <button data-kind="ems_on_site" data-text="Rettungsdienst vor Ort">🚑 Rettungsdienst vor Ort</button>
+        </div><div id="locBox" class="loc hidden"><b>Einsatzort</b><span id="locText"></span><a id="locLink" target="_blank">In Karten öffnen</a></div><button id="setLoc" class="full hidden">Aktuellen Standort als Einsatzort setzen</button></div>
+        <div class="card"><h3>Rückmeldungen</h3><div id="responses" class="list"></div></div>
+        <div class="card wide"><div class="card-head"><h3>Einsatzverlauf</h3></div><form id="updateForm" class="inline hidden"><input id="updateText" maxlength="1000" placeholder="Kurze Einsatzmeldung…"><button class="primary">Senden</button></form><div id="timeline" class="timeline"></div></div>
+      </div>
+    </section>
+
+    <div class="bottom">
+      <div class="card"><div class="card-head"><h3>Mitarbeiter</h3><span id="memberCount"></span></div><div id="members" class="list"></div></div>
+      <div class="card"><h3>Letzte Einsätze</h3><div id="history" class="list"></div></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+
+<dialog id="alarmDlg">
+<form id="alarmForm">
+  <div class="dlg-head"><div><span class="eyebrow red">Neuer Alarm</span><h2>Feueralarm auslösen</h2></div><button type="button" id="alarmClose">×</button></div>
+  <label>Standort / Werk<select id="alarmSite"></select></label>
+  <div><span class="label">Betroffener Bereich</span><div id="alarmAreas" class="checks"></div></div>
+  <label>Hinweis / Details<textarea id="alarmDetails" rows="3" maxlength="500"></textarea></label>
+  <label class="checkline"><input id="servicesCalled" type="checkbox"> Rettungskräfte wurden bereits verständigt</label>
+  <div class="actions"><button type="button" id="alarmCancel">Abbrechen</button><button class="danger" type="submit">Alarm jetzt auslösen</button></div>
+</form>
+</dialog>
+
+<dialog id="locDlg">
+<form id="locForm">
+  <div class="dlg-head"><div><span class="eyebrow">Einsatzort</span><h2>Standort setzen</h2></div><button type="button" id="locClose">×</button></div>
+  <p>Der Browser fragt nach Standortzugriff. Der erste gesetzte Einsatzort bleibt unveränderbar.</p>
+  <label>Notiz<input id="locNote" maxlength="200" placeholder="z. B. Halle 4, Nordseite"></label>
+  <div class="actions"><button type="button" id="locCancel">Abbrechen</button><button id="locConfirm" class="primary">Standort übernehmen</button></div>
+</form>
+</dialog>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "EvacPilot Leitstand",
+  "short_name": "EvacPilot",
+  "description": "Web-Leitstand für EvacPilot Alarmierung und Evakuierung.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08100d",
+  "theme_color": "#0c1512",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

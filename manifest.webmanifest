@@ -10,7 +10,7 @@
   "lang": "de",
   "icons": [
     {
-      "src": "./app-icon.png",
+      "src": "./app-icon.png?v=5",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"

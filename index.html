@@ -8,15 +8,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="EvacPilot">
   <title>EvacPilot Leitstand</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=4">
-  <link rel="icon" href="./app-icon.png?v=4" type="image/png">
-  <link rel="apple-touch-icon" href="./app-icon.png?v=4">
-  <link rel="stylesheet" href="./styles.css?v=4">
+  <link rel="manifest" href="./manifest.webmanifest?v=5">
+  <link rel="icon" href="./app-icon.png?v=5" type="image/png">
+  <link rel="apple-touch-icon" href="./app-icon.png?v=5">
+  <link rel="stylesheet" href="./styles.css?v=5">
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
-    <img class="brand-icon" src="./app-icon.png?v=4" alt="">
+    <img class="brand-icon" src="./app-icon.png?v=5" alt="">
     <div><b>EvacPilot</b><small>Leitstand</small></div>
   </div>
   <div class="top-actions">
@@ -29,11 +29,11 @@
   <section id="join" class="join hidden">
     <div class="join-wrap">
       <div class="join-brand">
-        <img src="./app-icon.png?v=4" alt="" class="join-icon">
+        <img src="./app-icon.png?v=5" alt="" class="join-icon">
         <div>
           <span class="eyebrow on-red">EvacPilot</span>
           <h1>Leitstand verbinden</h1>
-          <p>Mit Benutzername und Passwort auf jedem vorgesehenen Leitstand-PC anmelden. Die Live-Daten entsprechen der iPhone-App.</p>
+          <p>Mit Benutzername und Passwort anmelden. Die Live-Daten entsprechen der iPhone-App.</p>
         </div>
       </div>
       <div class="card join-card">
@@ -55,7 +55,7 @@
     <section class="brand-hero">
       <div class="brand-hero-copy">
         <div class="hero-app">
-          <img src="./app-icon.png?v=4" alt="" class="hero-icon">
+          <img src="./app-icon.png?v=5" alt="" class="hero-icon">
           <div><span class="eyebrow on-red">EvacPilot Leitstand</span><span class="hero-status">Live-Übersicht & Einsatzsteuerung</span></div>
         </div>
         <h1 id="orgName">EvacPilot</h1>
@@ -63,6 +63,7 @@
       </div>
       <div class="hero-actions">
         <select id="orgSelect" class="hidden"></select>
+        <button id="adminOpen" class="hero-secondary hidden">Administration</button>
         <button id="alarmOpen" class="alarm-cta hidden">Alarm auslösen</button>
         <button id="logout" class="hero-secondary">Webzugang trennen</button>
       </div>
@@ -131,6 +132,61 @@
 </form>
 </dialog>
 
-<script type="module" src="./app.js?v=4"></script>
+<dialog id="adminDlg" class="admin-dialog">
+  <div class="admin-shell">
+    <div class="admin-head">
+      <div><span class="eyebrow red">Leitstand Administrator</span><h2>Administration</h2><p>Die organisatorischen Administratorfunktionen entsprechen der iOS-App.</p></div>
+      <button type="button" id="adminClose">×</button>
+    </div>
+    <nav class="admin-tabs">
+      <button data-admin-tab="members" class="active">Mitarbeiter</button>
+      <button data-admin-tab="invites">Einladungen</button>
+      <button data-admin-tab="sites">Standorte</button>
+      <button data-admin-tab="areas">Hallen & Bereiche</button>
+      <button data-admin-tab="points">Sammelpunkte</button>
+      <button data-admin-tab="system">Alarmton & Lizenz</button>
+    </nav>
+    <div class="admin-body">
+      <section id="admin-members" class="admin-pane"></section>
+      <section id="admin-invites" class="admin-pane hidden"></section>
+      <section id="admin-sites" class="admin-pane hidden"></section>
+      <section id="admin-areas" class="admin-pane hidden"></section>
+      <section id="admin-points" class="admin-pane hidden"></section>
+      <section id="admin-system" class="admin-pane hidden"></section>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="memberDlg" class="editor-dialog">
+<form id="memberForm">
+  <div class="dlg-head"><div><span class="eyebrow red">Mitarbeiter</span><h2 id="memberDlgTitle">Mitarbeiter bearbeiten</h2></div><button type="button" id="memberClose">×</button></div>
+  <input type="hidden" id="memberID">
+  <div class="form-grid two">
+    <label>Name<input id="memberName" maxlength="100" required></label>
+    <label>Geschäftliche E-Mail<input id="memberEmail" type="email" maxlength="200"></label>
+    <label>Rolle<select id="memberRole"></select></label>
+    <label class="checkline switchline"><input id="memberActive" type="checkbox"> Aktives Mitglied</label>
+  </div>
+  <div class="editor-section"><h3>Qualifikationen</h3><div id="memberQualifications" class="checks"></div></div>
+  <div class="editor-section"><h3>Individuelle Berechtigungen</h3><div id="memberPermissions" class="checks permissions-grid"></div><p class="sub">Administratoren behalten immer alle Berechtigungen.</p></div>
+  <div class="editor-section"><h3>Zugewiesene Standorte</h3><div id="memberSites" class="checks"></div><p class="sub">Nur zugewiesene Standorte erhalten die passenden Alarme.</p></div>
+  <div class="editor-section"><h3>Zugewiesene Hallen / Bereiche</h3><div id="memberAreas" class="checks"></div></div>
+  <div class="actions between"><button type="button" id="memberDelete" class="delete-btn">Mitarbeiter löschen</button><div class="actions"><button type="button" id="memberCancel">Abbrechen</button><button class="primary" type="submit">Änderungen speichern</button></div></div>
+</form>
+</dialog>
+
+<dialog id="entityDlg" class="editor-dialog small-dialog">
+<form id="entityForm">
+  <div class="dlg-head"><div><span class="eyebrow red">Konfiguration</span><h2 id="entityTitle">Bearbeiten</h2></div><button type="button" id="entityClose">×</button></div>
+  <input type="hidden" id="entityKind"><input type="hidden" id="entityID">
+  <label>Name<input id="entityName" maxlength="120" required></label>
+  <label>Beschreibung<textarea id="entityDetails" rows="3" maxlength="500"></textarea></label>
+  <label id="entitySiteWrap" class="hidden">Standort<select id="entitySite"></select></label>
+  <label id="entityPointWrap" class="hidden">Sammelpunkt<select id="entityPoint"></select></label>
+  <div class="actions between"><button type="button" id="entityDelete" class="delete-btn hidden">Löschen</button><div class="actions"><button type="button" id="entityCancel">Abbrechen</button><button class="primary" type="submit">Speichern</button></div></div>
+</form>
+</dialog>
+
+<script type="module" src="./app.js?v=5"></script>
 </body>
 </html>

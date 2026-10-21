@@ -148,8 +148,8 @@ const fmt = (v,date=true) => {
   const d=new Date(v); if(Number.isNaN(d.getTime())) return String(v);
   return new Intl.DateTimeFormat(state.lang==="en"?"en-GB":state.lang==="es"?"es-ES":"de-DE",{...(date?{dateStyle:"short"}:{}),timeStyle:"medium"}).format(d);
 };
-function toast(msg){$("toast").textContent=tr(msg);$("toast").classList.remove("hidden");clearTimeout($("toast")._t);$("toast")._t=setTimeout(()=>$("toast").classList.add("hidden"),3500)}
-function conn(mode,text){$("conn").className=`pill ${mode||""}`;$("conn").textContent=tr(text)}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");clearTimeout($("toast")._t);$("toast")._t=setTimeout(()=>$("toast").classList.add("hidden"),3500)}
+function conn(mode,text){$("conn").className=`pill ${mode||""}`;$("conn").textContent=text}
 function curMember(){return (state.bundle?.memberships||[]).find(m=>same(m.user_id,state.userID)&&m.active&&!m.deleted_at)||null}
 function perms(){const m=curMember();return m?(m.permissions?.length?m.permissions:(defaults[m.role]||[])):[]}
 function can(p){return curMember()?.role==="administrator"||perms().includes(p)}
@@ -660,7 +660,7 @@ async function saveAlarmSound(){const doc=structuredClone(org());doc.alarmSound=
 
 async function switchOrg(e){state.access=state.accesses.find(x=>same(x.organization_id,e.target.value));localStorage.setItem("evacpilot_web_org",state.access.organization_id);await loadBundle()}
 async function logout(){if(state.channel)await sb.removeChannel(state.channel);await sb.auth.signOut({scope:"local"});localStorage.removeItem("evacpilot_web_org");location.reload()}
-function human(e){const m=String(e?.message||e||"");if(/invalid credentials/i.test(m))return tr("Benutzername oder Passwort ist falsch.");if(/browser session already belongs/i.test(m))return tr("Dieser Browser ist bereits einem anderen EvacPilot-Benutzer zugeordnet.");if(/not authorized|permission denied|row-level security/i.test(m))return tr("Keine Administratorberechtigung für diese Aktion.");if(/subscription member limit reached/i.test(m))return tr("Das Mitarbeiterlimit der Lizenz ist erreicht.");if(/network|fetch/i.test(m))return tr("Verbindung zum Backend fehlgeschlagen.");return tr(m||"Unbekannter Fehler.")}
+function human(e){const m=String(e?.message||e||"");if(/invalid credentials/i.test(m))return"Benutzername oder Passwort ist falsch.";if(/browser session already belongs/i.test(m))return"Dieser Browser ist bereits einem anderen EvacPilot-Benutzer zugeordnet.";if(/not authorized|permission denied|row-level security/i.test(m))return"Keine Administratorberechtigung für diese Aktion.";if(/subscription member limit reached/i.test(m))return"Das Mitarbeiterlimit der Lizenz ist erreicht.";if(/network|fetch/i.test(m))return"Verbindung zum Backend fehlgeschlagen.";return m||"Unbekannter Fehler."}
 function handle(e){console.error(e);toast(human(e))}
 
 function bind(){

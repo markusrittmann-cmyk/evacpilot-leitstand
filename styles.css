@@ -61,3 +61,9 @@ dialog{width:min(620px,calc(100% - 24px));max-height:90vh;overflow:auto;padding:
   .history-report-head{padding:18px 16px 12px}
   .history-report-body{padding:14px 16px 22px}
 }
+
+/* Sprache DE / EN / ES */
+.language-picker{display:block}
+.language-picker select{width:auto;min-width:68px;min-height:40px;padding:8px 28px 8px 10px;border-radius:12px;background:var(--card);font-weight:800}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:700px){.language-picker select{min-width:62px}.top-actions{gap:7px}}

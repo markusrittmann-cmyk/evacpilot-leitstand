@@ -1,5 +1,5 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js?v=5";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js?v=6";
 
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
@@ -190,7 +190,78 @@ function renderMembers(){
 }
 function renderHistory(){
   const hs=(state.bundle?.alerts||[]).filter(a=>a.state!=="active").sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,12);
-  $("history").innerHTML=hs.length?hs.map(a=>`<div class="row"><div><b>${a.type==="fire"?"Feueralarm":esc(a.type||"Alarm")}</b><div class="sub">${esc(site(a.siteID)?.name||"")}${site(a.siteID)?" · ":""}${esc(fmt(a.createdAt))}</div></div><span class="badge">${a.state==="resolved"?"Beendet":esc(a.state)}</span></div>`).join(""):`<span class="sub">Noch keine abgeschlossenen Einsätze.</span>`;
+  $("history").innerHTML=hs.length?hs.map(a=>{
+    const clickable=isAdmin()?" clickable":"";
+    const attrs=isAdmin()?` data-history-id="${esc(a.id)}" title="Einsatzbericht und Verlauf öffnen"`:"";
+    return `<div class="row${clickable}"${attrs}><div><b>${a.type==="fire"?"Feueralarm":esc(a.type||"Alarm")}</b><div class="sub">${esc(site(a.siteID)?.name||"")}${site(a.siteID)?" · ":""}${esc(fmt(a.createdAt))}</div></div><span class="badge">${a.state==="resolved"?"Beendet":esc(a.state)}</span></div>`;
+  }).join(""):`<span class="sub">Noch keine abgeschlossenen Einsätze.</span>`;
+  if(isAdmin()) $("history").querySelectorAll("[data-history-id]").forEach(el=>el.onclick=()=>openHistoryReport(el.dataset.historyId));
+}
+function historyAlert(id){return (state.bundle?.alerts||[]).find(a=>same(a.id,id))||null}
+function historyStatus(v){return {onSite:"Vor Ort",coming:"Auf dem Weg",onWay:"Auf dem Weg",unavailable:"Nicht vor Ort",noResponse:"Keine Rückmeldung"}[v]||v||"–"}
+function historyYesNo(v){if(v===true||v==="yes")return"Ja";if(v===false||v==="no")return"Nein";return v||"–"}
+function historyCondition(v){return {okay:"OK",notOkay:"Nicht OK",notAssessed:"Nicht bewertet"}[v]||v||"–"}
+function historyMember(id){return member(id)?.display_name||"–"}
+function openHistoryReport(id){
+  if(!isAdmin())return;
+  const a=historyAlert(id);if(!a)return;
+  const areaNames=(a.areaIDs||[]).map(x=>area(x)?.name||x);
+  $("historyReportTitle").textContent=a.type==="fire"?"Einsatzbericht · Feueralarm":"Einsatzbericht";
+  $("historyReportMeta").textContent=[site(a.siteID)?.name,areaNames.join(", "),fmt(a.createdAt)].filter(Boolean).join(" · ");
+  $("historyReportBody").innerHTML=buildHistoryReport(a,areaNames);
+  $("historyReportDlg").showModal();
+}
+function buildHistoryReport(a,areaNames){
+  const loc=locationOf(a);
+  const responses=[...(a.responses||[])].sort((x,y)=>new Date(x.updatedAt)-new Date(y.updatedAt));
+  const progress=[...(a.areaProgress||[])].sort((x,y)=>new Date(x.updatedAt)-new Date(y.updatedAt));
+  const events=[...(a.eventLog||[])].sort((x,y)=>new Date(x.timestamp)-new Date(y.timestamp));
+  const protocol=a.fireProtocol||null;
+  const attachments=a.attachments||[];
+
+  const responseRows=responses.length?responses.map(r=>`<div class="report-row"><span>${esc(historyMember(r.memberID))}</span><b>${esc(historyStatus(r.status))}</b><small>${esc(fmt(r.updatedAt))}</small></div>`).join(""):`<div class="muted-note">Keine Rückmeldungen gespeichert.</div>`;
+  const areaRows=progress.length?progress.map(p=>`<div class="report-row"><span>${esc(area(p.areaID)?.name||p.areaID)}</span><b>${esc(statusNames[p.status]||p.status||"–")}</b><small>${esc(historyMember(p.updatedBy))} · ${esc(fmt(p.updatedAt))}</small></div>`).join(""):`<div class="muted-note">Keine Bereichsstatus gespeichert.</div>`;
+  const eventRows=events.length?events.map(e=>`<div class="report-event"><div class="report-event-icon">${icons[e.kind]||"•"}</div><div><b>${esc(e.text||e.kind)}</b><div class="sub">${esc(fmt(e.timestamp))}${e.memberID?` · ${esc(historyMember(e.memberID))}`:""}</div></div></div>`).join(""):`<div class="muted-note">Kein Verlauf gespeichert.</div>`;
+  const attachmentRows=attachments.length?attachments.map(x=>`<div class="report-row"><span>${esc(x.fileName||"Anlage")}</span><b>${esc(x.kind||"Datei")}</b><small>${esc(fmt(x.createdAt))}</small></div>`).join(""):`<div class="muted-note">Keine Anlagen vorhanden.</div>`;
+
+  return `
+    <div class="report-summary-grid">
+      <div class="report-kpi"><span>Status</span><b>${a.state==="resolved"?"Beendet":esc(a.state||"–")}</b></div>
+      <div class="report-kpi"><span>Beginn</span><b>${esc(fmt(a.createdAt))}</b></div>
+      <div class="report-kpi"><span>Beendet</span><b>${esc(fmt(a.resolvedAt))}</b></div>
+      <div class="report-kpi"><span>Ausgelöst von</span><b>${esc(historyMember(a.createdBy))}</b></div>
+    </div>
+    <section class="report-section">
+      <h3>Grunddaten</h3>
+      <div class="report-facts">
+        <div><span>Standort</span><b>${esc(site(a.siteID)?.name||"–")}</b></div>
+        <div><span>Bereich</span><b>${esc(areaNames.join(", ")||"–")}</b></div>
+        <div><span>Beschreibung</span><b>${esc(a.details||"–")}</b></div>
+        <div><span>Rettungskräfte alarmiert</span><b>${a.emergencyServicesCalled?"Ja":"Nein"}</b></div>
+        <div><span>Entwarnung durch</span><b>${esc(historyMember(a.resolvedBy))}</b></div>
+        <div><span>Einsatzort</span><b>${loc?.latitude?`${Number(loc.latitude).toFixed(6)}, ${Number(loc.longitude).toFixed(6)}`:"–"}</b></div>
+      </div>
+    </section>
+    <section class="report-section"><h3>Rückmeldungen</h3><div class="report-list">${responseRows}</div></section>
+    <section class="report-section"><h3>Hallen / Bereiche</h3><div class="report-list">${areaRows}</div></section>
+    <section class="report-section"><h3>Einsatzverlauf</h3><div class="report-timeline">${eventRows}</div></section>
+    <section class="report-section"><h3>Brandprotokoll / Bericht</h3>${protocol?buildHistoryProtocol(protocol):`<div class="muted-note">Für diesen Einsatz wurde kein Brandprotokoll ausgefüllt.</div>`}</section>
+    <section class="report-section"><h3>Anlagen</h3><div class="report-list">${attachmentRows}</div></section>
+  `;
+}
+function buildHistoryProtocol(p){
+  const fields=[
+    ["Nr.",p.reportNumber],["Unternehmen / Werk",p.plant],["Halle / Bereich",p.area],["Datum / Uhrzeit",p.occurredAt?fmt(p.occurredAt):"–"],
+    ["Entstehung / Ursache",p.originOrCause],["Beschreibung / Ablauf",p.descriptionOrSequence],
+    ["Personenschaden",historyYesNo(p.personalInjury)],["Verletzte Personen",p.personalInjuryCount??"–"],
+    ["Personenrettung",historyYesNo(p.personRescue)],["Gerettete Personen",p.personRescueCount??"–"],
+    ["Gebäuderäumung",historyCondition(p.evacuationScope)],["Ablauf",historyCondition(p.evacuationProcess)],["Dauer",p.evacuationDuration],
+    ["Baulicher Brandschutz",historyYesNo(p.structuralFireProtection)],["Automatische Feuerlöscheinrichtung",historyYesNo(p.automaticExtinguishing)],
+    ["Manuelle Feuerlöscheinrichtungen",historyYesNo(p.manualExtinguishing)],["Brandmeldeanlage vorhanden",historyYesNo(p.fireAlarmSystemPresent)],
+    ["Rettungs- und Fluchtwege",historyCondition(p.escapeRoutesCondition)],["Vorbeugender Brandschutz",historyCondition(p.preventiveCondition)],
+    ["Protokollersteller",p.author],["Protokolldatum",p.reportDate?fmt(p.reportDate):"–"]
+  ];
+  return `<div class="report-facts">${fields.map(([k,v])=>`<div><span>${esc(k)}</span><b>${esc(v??"–")}</b></div>`).join("")}</div>`;
 }
 
 async function join(e){
@@ -500,7 +571,7 @@ function renderAdminSystem(){
 let previewAudio=null;
 async function previewAlarmSound(){
   if(previewAudio){previewAudio.pause();previewAudio=null}
-  const sound=$("adminSound").value;previewAudio=new Audio(`./alertline_siren_${sound.slice(-2)}.wav?v=5`);
+  const sound=$("adminSound").value;previewAudio=new Audio(`./alertline_siren_${sound.slice(-2)}.wav?v=6`);
   await previewAudio.play();
 }
 async function saveAlarmSound(){const doc=structuredClone(org());doc.alarmSound=$("adminSound").value;await saveOrganization(doc);toast("Alarmton gespeichert.");await loadBundle(true)}
@@ -523,7 +594,7 @@ function bind(){
   window.addEventListener("online",()=>{conn("online","Live verbunden");loadBundle(true).catch(handle)});window.addEventListener("offline",()=>conn("offline","Browser offline"));
 }
 async function boot(){
-  bind();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js?v=5").catch(console.warn);
+  bind();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js?v=6").catch(console.warn);
   try{await ensureSession();await loadAccesses()}catch(e){console.error(e);conn("offline","Verbindung fehlgeschlagen");$("join").classList.remove("hidden");$("joinMsg").textContent=human(e)}
 }
 boot();

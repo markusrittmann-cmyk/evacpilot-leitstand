@@ -8,15 +8,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="EvacPilot">
   <title>EvacPilot Leitstand</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=5">
-  <link rel="icon" href="./app-icon.png?v=5" type="image/png">
-  <link rel="apple-touch-icon" href="./app-icon.png?v=5">
-  <link rel="stylesheet" href="./styles.css?v=5">
+  <link rel="manifest" href="./manifest.webmanifest?v=6">
+  <link rel="icon" href="./app-icon.png?v=6" type="image/png">
+  <link rel="apple-touch-icon" href="./app-icon.png?v=6">
+  <link rel="stylesheet" href="./styles.css?v=6">
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
-    <img class="brand-icon" src="./app-icon.png?v=5" alt="">
+    <img class="brand-icon" src="./app-icon.png?v=6" alt="">
     <div><b>EvacPilot</b><small>Leitstand</small></div>
   </div>
   <div class="top-actions">
@@ -29,7 +29,7 @@
   <section id="join" class="join hidden">
     <div class="join-wrap">
       <div class="join-brand">
-        <img src="./app-icon.png?v=5" alt="" class="join-icon">
+        <img src="./app-icon.png?v=6" alt="" class="join-icon">
         <div>
           <span class="eyebrow on-red">EvacPilot</span>
           <h1>Leitstand verbinden</h1>
@@ -55,7 +55,7 @@
     <section class="brand-hero">
       <div class="brand-hero-copy">
         <div class="hero-app">
-          <img src="./app-icon.png?v=5" alt="" class="hero-icon">
+          <img src="./app-icon.png?v=6" alt="" class="hero-icon">
           <div><span class="eyebrow on-red">EvacPilot Leitstand</span><span class="hero-status">Live-Übersicht & Einsatzsteuerung</span></div>
         </div>
         <h1 id="orgName">EvacPilot</h1>
@@ -111,6 +111,18 @@
 </main>
 
 <div id="toast" class="toast hidden"></div>
+
+<dialog id="historyReportDlg" class="history-report-dialog">
+  <div class="history-report-head">
+    <div>
+      <span class="eyebrow red">Leitstand Administrator</span>
+      <h2 id="historyReportTitle">Einsatzbericht</h2>
+      <div id="historyReportMeta" class="sub"></div>
+    </div>
+    <form method="dialog"><button class="round-btn" aria-label="Schließen">×</button></form>
+  </div>
+  <div id="historyReportBody" class="history-report-body"></div>
+</dialog>
 
 <dialog id="alarmDlg">
 <form id="alarmForm">
@@ -187,6 +199,6 @@
 </form>
 </dialog>
 
-<script type="module" src="./app.js?v=5"></script>
+<script type="module" src="./app.js?v=6"></script>
 </body>
 </html>

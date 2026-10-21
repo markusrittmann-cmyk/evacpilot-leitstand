@@ -34,3 +34,30 @@ dialog{width:min(620px,calc(100% - 24px));max-height:90vh;overflow:auto;padding:
   :root{color-scheme:dark;--bg:#111113;--card:#1c1c1e;--card2:#242427;--text:#f5f5f7;--muted:#a8a8b0;--line:rgba(255,255,255,.08);--shadow:0 12px 32px rgba(0,0,0,.20)}
   .topbar{background:rgba(20,20,22,.86)}button{background:#2a2a2d;color:var(--text)}input,textarea,select{color:var(--text);background:#242427;border-color:rgba(255,255,255,.09)}input:focus,textarea:focus,select:focus{background:#2a2a2d}.pill{background:#222225}.pill.online{background:#13291d;color:#79dda7}.pill.offline{background:#2b1416}.empty{background:linear-gradient(135deg,#1c1c1e,#18211c)}.ready-icon{background:#173324}.area-actions button{background:#2a2a2d}.quick button{background:#242427}.loc{background:#172131}.row,.admin-item{background:#242427}.badge{background:#34161a}.badge.green{background:#173324}.badge.orange{background:#382817}.red-bg{background:#35161a}.green-bg{background:#173324}.orange-bg{background:#382817}.blue-bg{background:#16253b}dialog{background:#1c1c1e}.delete-btn{background:#35161a}.code-box{background:#2b171a}.danger-note{background:#35161a;color:#ff9aa3}
 }
+
+/* Einsatzhistorie: Bericht + Verlauf für Leitstand Administrator */
+.history-report-dialog{width:min(1040px,calc(100% - 24px));max-height:92vh;overflow:hidden}
+.history-report-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px 24px 14px;border-bottom:1px solid var(--line)}
+.history-report-head h2{margin:0 0 5px}
+.history-report-head form{padding:0;display:block}
+.history-report-body{padding:18px 24px 28px;overflow:auto;max-height:calc(92vh - 96px)}
+.report-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.report-kpi,.report-facts>div{border:1px solid var(--line);border-radius:14px;padding:13px;background:var(--card2)}
+.report-kpi span,.report-facts span{display:block;color:var(--muted);font-size:.75rem;margin-bottom:5px}
+.report-kpi b,.report-facts b{display:block;white-space:pre-wrap;overflow-wrap:anywhere}
+.report-section{margin:22px 0}
+.report-section>h3{margin:0 0 11px}
+.report-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.report-list{display:grid;gap:7px}
+.report-row{display:grid;grid-template-columns:minmax(180px,1fr) minmax(120px,.45fr) minmax(190px,.65fr);gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card2)}
+.report-row small{color:var(--muted);text-align:right}
+.report-timeline{display:grid;gap:7px}
+.report-event{display:grid;grid-template-columns:32px 1fr;gap:9px;border-left:2px solid var(--line);padding:7px 0 7px 12px}
+.report-event-icon{font-size:1.05rem}
+@media(max-width:760px){
+  .report-summary-grid,.report-facts{grid-template-columns:1fr}
+  .report-row{grid-template-columns:1fr}
+  .report-row small{text-align:left}
+  .history-report-head{padding:18px 16px 12px}
+  .history-report-body{padding:14px 16px 22px}
+}
